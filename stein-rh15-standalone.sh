@@ -4,20 +4,30 @@ TEMPLATES_HOME=/usr/share/openstack-tripleo-heat-templates
 CUSTOM_TEMPLATES=/home/stack/templates
 
 if [ -f ./osjs.conf ]; then
-        source ./osjs.conf
+	source ./osjs.conf
 fi
 
 if [ -z ${SUBMAN_USER} ]; then
-        read -p "subscription-manager username: " SUBMAN_USER
+	read -p "subscription-manager username: " SUBMAN_USER
 fi
 
 if [ -z ${SUBMAN_PASS} ]; then
-        read -s -p "subscription-manager password: " SUBMAN_PASS
+	read -s -p "subscription-manager password: " SUBMAN_PASS
 fi
 
 if [ -z ${SUBMAN_POOL} ]; then
 	read -p "subscription-manager pool: " SUBMAN_POOL
 fi
+
+if [ -z ${DNS_1} ]; then
+	DNS_1=8.8.8.8
+fi
+
+if [ -z ${DNS_2} ]; then
+	DNS_2=1.1.1.1
+fi
+
+function CONFIGURE_HOST {
 
 subscription-manager register --username ${SUBMAN_USER} --password ${SUBMAN_PASS}
 subscription-manager attach --pool=${SUBMAN_POOL}
@@ -63,8 +73,8 @@ parameter_defaults:
   Debug: true
   DeploymentUser: stack
   DnsServers:
-    - 192.168.80.254
-    - 192.168.100.254
+    - ${DNS_1}
+    - ${DNS_2}
   DockerInsecureRegistryAddress:
     - ${IP_ADDRESS}:8787
   NeutronPublicInterface: eth1

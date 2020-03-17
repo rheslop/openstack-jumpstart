@@ -8,15 +8,23 @@ if [ -f ./osjs.conf ]; then
 fi
 
 if [ -z ${SUBMAN_USER} ]; then
-        read -p "subscription-manager username: " SUBMAN_USER
+	read -p "subscription-manager username: " SUBMAN_USER
 fi
 
 if [ -z ${SUBMAN_PASS} ]; then
-        read -s -p "subscription-manager password: " SUBMAN_PASS
+	read -s -p "subscription-manager password: " SUBMAN_PASS
 fi
 
 if [ -z ${SUBMAN_POOL} ]; then
 	read -p "subscription-manager pool: " SUBMAN_POOL
+fi
+
+if [ -z ${DNS_1} ]; then
+	DNS_1=8.8.8.8
+fi
+
+if [ -z ${DNS_2} ]; then
+	DNS_2=1.1.1.1
 fi
 
 function CONFIGURE_HOST {
@@ -78,8 +86,8 @@ parameter_defaults:
   Debug: true
   DeploymentUser: stack
   DnsServers:
-    - 192.168.80.254
-    - 192.168.100.254
+    - ${DNS_1}
+    - ${DNS_2}
   DockerInsecureRegistryAddress:
     - ${IP_ADDRESS}:8787
   NeutronPublicInterface: eth1
@@ -109,7 +117,7 @@ sudo podman login registry.redhat.io --username ${SUBMAN_USER} --password ${SUBM
 sudo openstack tripleo deploy --templates \
 --local-ip=${IP_ADDRESS}/24 \
 -e ${TEMPLATES_HOME}/environments/standalone/standalone-tripleo.yaml \
--r ${CUSTOM_TEMPLATES}/roles/Standalone.yaml \
+-r ${TEMPLATES_HOME}/roles/Standalone.yaml \
 -e ${CUSTOM_TEMPLATES}/standalone.yaml \
 --output-dir /home/stack --standalone
 EOF
