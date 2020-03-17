@@ -71,170 +71,25 @@ chmod 0440 /etc/sudoers.d/stack
 
 mkdir ${CUSTOM_TEMPLATES}
 
-cat <<EOF > /home/stack/templates/role.yaml
-###############################################################################
-# Role: Standalone                                                            #
-###############################################################################
-- name: Standalone
-  description: |
-    A standalone role that a minimal set of services. This can be used for
-    testing in a single node configuration with the
-    'openstack tripleo deploy --standalone' command or via an Undercloud using
-    'openstack overcloud deploy'.
-  CountDefault: 1
-  tags:
-    - primary
-    - controller
-    - standalone
-  networks:
-    External:
-      subnet: external_subnet
-    InternalApi:
-      subnet: internal_api_subnet
-    Storage:
-      subnet: storage_subnet
-    StorageMgmt:
-      subnet: storage_mgmt_subnet
-    Tenant:
-      subnet: tenant_subnet
-  ServicesDefault:
-    - OS::TripleO::Services::Aide
-    - OS::TripleO::Services::AodhApi
-    - OS::TripleO::Services::AodhEvaluator
-    - OS::TripleO::Services::AodhListener
-    - OS::TripleO::Services::AodhNotifier
-    - OS::TripleO::Services::AuditD
-    - OS::TripleO::Services::BarbicanApi
-    - OS::TripleO::Services::BarbicanBackendDogtag
-    - OS::TripleO::Services::BarbicanBackendKmip
-    - OS::TripleO::Services::BarbicanBackendPkcs11Crypto
-    - OS::TripleO::Services::BarbicanBackendSimpleCrypto
-    - OS::TripleO::Services::CACerts
-    - OS::TripleO::Services::CeilometerAgentCentral
-    - OS::TripleO::Services::CeilometerAgentNotification
-    - OS::TripleO::Services::CertmongerUser
-    - OS::TripleO::Services::CinderApi
-    - OS::TripleO::Services::CinderBackendNVMeOF
-    - OS::TripleO::Services::CinderBackendPure
-    - OS::TripleO::Services::CinderBackup
-    - OS::TripleO::Services::CinderScheduler
-    - OS::TripleO::Services::CinderVolume
-    - OS::TripleO::Services::Clustercheck
-    - OS::TripleO::Services::Collectd
-    - OS::TripleO::Services::ComputeCeilometerAgent
-    - OS::TripleO::Services::ContainerImagePrepare
-    - OS::TripleO::Services::ContainersLogrotateCrond
-    - OS::TripleO::Services::DesignateApi
-    - OS::TripleO::Services::DesignateCentral
-    - OS::TripleO::Services::DesignateMDNS
-    - OS::TripleO::Services::DesignateProducer
-    - OS::TripleO::Services::DesignateSink
-    - OS::TripleO::Services::DesignateWorker
-    - OS::TripleO::Services::Docker
-    - OS::TripleO::Services::DockerRegistry
-    - OS::TripleO::Services::Ec2Api
-    - OS::TripleO::Services::Etcd
-    - OS::TripleO::Services::ExternalSwiftProxy
-    - OS::TripleO::Services::GlanceApi
-    - OS::TripleO::Services::GnocchiApi
-    - OS::TripleO::Services::GnocchiMetricd
-    - OS::TripleO::Services::GnocchiStatsd
-    - OS::TripleO::Services::HAproxy
-    - OS::TripleO::Services::HeatApi
-    - OS::TripleO::Services::HeatApiCfn
-    - OS::TripleO::Services::HeatApiCloudwatch
-    - OS::TripleO::Services::HeatEngine
-    - OS::TripleO::Services::Horizon
-    - OS::TripleO::Services::IpaClient
-    - OS::TripleO::Services::Ipsec
-    - OS::TripleO::Services::IronicApi
-    - OS::TripleO::Services::IronicConductor
-    - OS::TripleO::Services::IronicInspector
-    - OS::TripleO::Services::IronicNeutronAgent
-    - OS::TripleO::Services::IronicPxe
-    - OS::TripleO::Services::Iscsid
-    - OS::TripleO::Services::Keepalived
-    - OS::TripleO::Services::Kernel
-    - OS::TripleO::Services::Keystone
-    - OS::TripleO::Services::LoginDefs
-    - OS::TripleO::Services::ManilaApi
-    - OS::TripleO::Services::ManilaScheduler
-    - OS::TripleO::Services::ManilaShare
-    - OS::TripleO::Services::MasqueradeNetworks
-    - OS::TripleO::Services::Memcached
-    - OS::TripleO::Services::MetricsQdr
-    - OS::TripleO::Services::MistralApi
-    - OS::TripleO::Services::MistralEngine
-    - OS::TripleO::Services::MistralEventEngine
-    - OS::TripleO::Services::MistralExecutor
-    - OS::TripleO::Services::Multipathd
-    - OS::TripleO::Services::MySQL
-    - OS::TripleO::Services::MySQLClient
-    - OS::TripleO::Services::NeutronApi
-    - OS::TripleO::Services::NeutronBgpVpnApi
-    - OS::TripleO::Services::NeutronBgpVpnBagpipe
-    - OS::TripleO::Services::NeutronCorePlugin
-    - OS::TripleO::Services::NeutronDhcpAgent
-    - OS::TripleO::Services::NeutronL2gwAgent
-    - OS::TripleO::Services::NeutronL2gwApi
-    - OS::TripleO::Services::NeutronL3Agent
-    - OS::TripleO::Services::NeutronLinuxbridgeAgent
-    - OS::TripleO::Services::NeutronMetadataAgent
-    - OS::TripleO::Services::NeutronOvsAgent
-    - OS::TripleO::Services::NeutronSfcApi
-    - OS::TripleO::Services::NeutronVppAgent
-    - OS::TripleO::Services::NovaApi
-    - OS::TripleO::Services::NovaCompute
-    - OS::TripleO::Services::NovaConductor
-    - OS::TripleO::Services::NovaIronic
-    - OS::TripleO::Services::NovaLibvirt
-    - OS::TripleO::Services::NovaMetadata
-    - OS::TripleO::Services::NovaMigrationTarget
-    - OS::TripleO::Services::NovaScheduler
-    - OS::TripleO::Services::NovaVncProxy
-    - OS::TripleO::Services::OVNController
-    - OS::TripleO::Services::OVNDBs
-    - OS::TripleO::Services::OVNMetadataAgent
-    - OS::TripleO::Services::OctaviaApi
-    - OS::TripleO::Services::OctaviaDeploymentConfig
-    - OS::TripleO::Services::OctaviaHealthManager
-    - OS::TripleO::Services::OctaviaHousekeeping
-    - OS::TripleO::Services::OctaviaWorker
-    - OS::TripleO::Services::OpenStackClients
-    - OS::TripleO::Services::OsloMessagingNotify
-    - OS::TripleO::Services::OsloMessagingRpc
-    - OS::TripleO::Services::Pacemaker
-    - OS::TripleO::Services::PankoApi
-    - OS::TripleO::Services::PlacementApi
-    - OS::TripleO::Services::Podman
-    - OS::TripleO::Services::Rear
-    - OS::TripleO::Services::Redis
-    - OS::TripleO::Services::Rhsm
-    - OS::TripleO::Services::Rsyslog
-    - OS::TripleO::Services::RsyslogSidecar
-    - OS::TripleO::Services::SaharaApi
-    - OS::TripleO::Services::SaharaEngine
-    - OS::TripleO::Services::Securetty
-    - OS::TripleO::Services::Snmp
-    - OS::TripleO::Services::Sshd
-    - OS::TripleO::Services::SwiftDispersion
-    - OS::TripleO::Services::SwiftProxy
-    - OS::TripleO::Services::SwiftRingBuilder
-    - OS::TripleO::Services::SwiftStorage
-    - OS::TripleO::Services::Timesync
-    - OS::TripleO::Services::Timezone
-    - OS::TripleO::Services::Tmpwatch
-    - OS::TripleO::Services::TripleoFirewall
-    - OS::TripleO::Services::TripleoPackages
-    - OS::TripleO::Services::Tuned
-    - OS::TripleO::Services::Vpp
-    - OS::TripleO::Services::Zaqar
-EOF
-
 cat <<EOF > /home/stack/templates/standalone.yaml
 parameter_defaults:
   ContainerImagePrepare:
   - set:
+      ceph_alertmanager_image: ose-prometheus-alertmanager
+      ceph_alertmanager_namespace: registry.redhat.io/openshift4
+      ceph_alertmanager_tag: 4.1
+      ceph_grafana_image: rhceph-3-dashboard-rhel7
+      ceph_grafana_namespace: registry.redhat.io/rhceph
+      ceph_grafana_tag: 3
+      ceph_image: rhceph-4-rhel8
+      ceph_namespace: registry.redhat.io/rhceph
+      ceph_node_exporter_image: ose-prometheus-node-exporter
+      ceph_node_exporter_namespace: registry.redhat.io/openshift4
+      ceph_node_exporter_tag: v4.1
+      ceph_prometheus_image: ose-prometheus
+      ceph_prometheus_namespace: registry.redhat.io/openshift4
+      ceph_prometheus_tag: 4.1
+      ceph_tag: latest
       name_prefix: openstack-
       name_suffix: ''
       namespace: registry.redhat.io/rhosp-rhel8
@@ -281,7 +136,7 @@ sudo podman login registry.redhat.io --username ${SUBMAN_USER} --password ${SUBM
 sudo openstack tripleo deploy --templates \
 --local-ip=${IP_ADDRESS}/24 \
 -e ${TEMPLATES_HOME}/environments/standalone/standalone-tripleo.yaml \
--r ${CUSTOM_TEMPLATES}/role.yaml \
+-r ${CUSTOM_TEMPLATES}/roles/Standalone.yaml \
 -e ${CUSTOM_TEMPLATES}/standalone.yaml \
 --output-dir /home/stack --standalone
 EOF
