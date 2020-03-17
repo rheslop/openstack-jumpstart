@@ -7,15 +7,6 @@ if [ -f ./osjs.conf ]; then
 	source ./osjs.conf
 fi
 
-if [ -f /etc/sysconfig/network-scripts/ifcfg-eth1 ]; then
-	IP_W_MASK=$(ip addr show eth1 | awk 'NR==3 {print $2}')
-	IP_ADDRESS=$( echo $IP_W_MASK | awk -F/ '{print $1}' )
-fi
-
-if [ -f ./rhosp16-standalone.conf ]; then
-	source ./rhosp16-standalone.conf
-fi
-
 if [ -z ${SUBMAN_USER} ]; then
         read -p "subscription-manager username: " SUBMAN_USER
 fi
@@ -26,24 +17,6 @@ fi
 
 if [ -z ${SUBMAN_POOL} ]; then
 	read -p "subscription-manager pool: " SUBMAN_POOL
-fi
-
-if [ -z ${IP_ADDRESS} ]; then
-	read -p "eth1 IP address: " IP_ADDRESS
-
-# eth1 configuration
-
-cat > /etc/sysconfig/network-scripts/ifcfg-eth1 << EOF
-DEVICE="eth1"
-BOOTPROTO="none"
-ONBOOT="yes"
-TYPE="Ethernet"
-IPADDR="${IP_ADDRESS}"
-NETMASK="255.255.255.0"
-GATEWAY="192.168.100.254" # Need to remove hard set variables
-DNS1="192.168.100.254"
-EOF
-
 fi
 
 function CONFIGURE_HOST {
