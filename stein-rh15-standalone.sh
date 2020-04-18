@@ -19,6 +19,10 @@ if [ -z ${SUBMAN_POOL} ]; then
 	read -p "subscription-manager pool: " SUBMAN_POOL
 fi
 
+if [ -z ${IP_ADDRESS} ]; then
+	read -p "IP Address: " IP_ADDRESS
+fi
+
 if [ -z ${DNS_1} ]; then
 	DNS_1=8.8.8.8
 fi
