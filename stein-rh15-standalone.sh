@@ -2,6 +2,7 @@
 
 TEMPLATES_HOME=/usr/share/openstack-tripleo-heat-templates
 CUSTOM_TEMPLATES=/home/stack/templates
+HOST_DOMAIN=$(hostname | cut -d . -f 2,3)
 
 if [ -f ./osjs.conf ]; then
 	source ./osjs.conf
@@ -11,9 +12,7 @@ if [ -z ${SUBMAN_USER} ]; then
 	read -p "subscription-manager username: " SUBMAN_USER
 fi
 
-if [ -z ${SUBMAN_PASS} ]; then
-	read -s -p "subscription-manager password: " SUBMAN_PASS
-fi
+read -s -p "subscription-manager password: " SUBMAN_PASS
 
 if [ -z ${SUBMAN_POOL} ]; then
 	read -p "subscription-manager pool: " SUBMAN_POOL
@@ -30,6 +29,25 @@ fi
 if [ -z ${DNS_2} ]; then
 	DNS_2=1.1.1.1
 fi
+
+###########################################
+### Template authentication is required ###
+###########################################
+#
+#  Set TEMPLATE_AUTHENTICATION to either
+#
+#  TEMPLATE_AUTHENTICATION=${SUBMAN_USER}:\"${SUBMAN_PASS}\"
+#
+#          --- or ---
+#
+# Generate a token for use at https://access.redhat.com/terms-based-registry/
+# TEMPLATE_AUTHENTICATION=1234567|user: $token
+#
+###########################################
+
+TEMPLATE_AUTHENTICATION=${SUBMAN_USER}:\"${SUBMAN_PASS}\"
+
+###########################################
 
 function CONFIGURE_HOST {
 
@@ -71,7 +89,7 @@ parameter_defaults:
     tag_from_label: '{version}-{release}'
   ContainerImageRegistryCredentials:
     registry.redhat.io:
-      ${SUBMAN_USER}: "${SUBMAN_PASS}"
+      ${TEMPLATE_AUTHENTICATION}
   CloudName: ${IP_ADDRESS}
   ControlPlaneStaticRoutes: []
   Debug: true
@@ -91,19 +109,21 @@ parameter_defaults:
     NovaComputeLibvirtType: qemu
   NtpServer: 0.pool.ntp.org
   # Domain
-  NeutronDnsDomain: ootpa.local
-  CloudDomain: ootpa.local
-  CloudName: overcloud.ootpa.local
-  CloudNameCtlPlane: overcloud.ctlplane.ootpa.local
-  CloudNameInternal: overcloud.internalapi.ootpa.local
-  CloudNameStorage: overcloud.storage.ootpa.local
-  CloudNameStorageManagement: overcloud.storagemgmt.ootpa.local
+  NeutronDnsDomain: $(HOST_DOMAIN)
+  CloudDomain: $(HOST_DOMAIN)
+  CloudName: overcloud.$(HOST_DOMAIN)
+  CloudNameCtlPlane: overcloud.ctlplane.$(HOST_DOMAIN)
+  CloudNameInternal: overcloud.internalapi.$(HOST_DOMAIN)
+  CloudNameStorage: overcloud.storage.ootpa.$(HOST_DOMAIN)
+  CloudNameStorageManagement: overcloud.storagemgmt.$(HOST_DOMAIN)
 EOF
 
 cat <<EOF > /home/stack/deploy.sh
 #!/bin/bash
 
-sudo podman login registry.redhat.io --username ${SUBMAN_USER} --password ${SUBMAN_PASS}
+read -s -p "subscription-manager password: " SUBMAN_PASS
+
+sudo podman login registry.redhat.io --username ${SUBMAN_USER} --password \${SUBMAN_PASS}
 
 sudo openstack tripleo deploy --templates \
 --local-ip=${IP_ADDRESS}/24 \
@@ -114,6 +134,7 @@ sudo openstack tripleo deploy --templates \
 EOF
 
 chown -R stack:stack /home/stack
+chmod +x /home/stack/deploy.sh
 } 
 
 
