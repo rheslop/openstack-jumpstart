@@ -109,13 +109,13 @@ parameter_defaults:
     NovaComputeLibvirtType: qemu
   NtpServer: 0.pool.ntp.org
   # Domain
-  NeutronDnsDomain: $(HOST_DOMAIN)
-  CloudDomain: $(HOST_DOMAIN)
-  CloudName: overcloud.$(HOST_DOMAIN)
-  CloudNameCtlPlane: overcloud.ctlplane.$(HOST_DOMAIN)
-  CloudNameInternal: overcloud.internalapi.$(HOST_DOMAIN)
-  CloudNameStorage: overcloud.storage.ootpa.$(HOST_DOMAIN)
-  CloudNameStorageManagement: overcloud.storagemgmt.$(HOST_DOMAIN)
+  NeutronDnsDomain: ${HOST_DOMAIN}
+  CloudDomain: ${HOST_DOMAIN}
+  CloudName: overcloud.${HOST_DOMAIN}
+  CloudNameCtlPlane: overcloud.ctlplane.${HOST_DOMAIN}
+  CloudNameInternal: overcloud.internalapi.${HOST_DOMAIN}
+  CloudNameStorage: overcloud.storage.${HOST_DOMAIN}
+  CloudNameStorageManagement: overcloud.storagemgmt.${HOST_DOMAIN}
 EOF
 
 cat <<EOF > /home/stack/deploy.sh
