@@ -53,6 +53,7 @@ function CONFIGURE_HOST {
 
 subscription-manager register --username ${SUBMAN_USER} --password ${SUBMAN_PASS}
 subscription-manager attach --pool=${SUBMAN_POOL}
+subscription-manager release --set=8.1
 subscription-manager repos --disable=*
 subscription-manager repos \
 --enable=rhel-8-for-x86_64-baseos-rpms \
