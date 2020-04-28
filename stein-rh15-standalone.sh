@@ -12,7 +12,7 @@ if [ -z ${SUBMAN_USER} ]; then
 	read -p "subscription-manager username: " SUBMAN_USER
 fi
 
-read -s -p "subscription-manager password: " SUBMAN_PASS
+read -s -p "subscription-manager password: " SUBMAN_PASS && echo ""
 
 if [ -z ${SUBMAN_POOL} ]; then
 	read -p "subscription-manager pool: " SUBMAN_POOL
@@ -36,7 +36,7 @@ fi
 #
 #  Set TEMPLATE_AUTHENTICATION to either
 #
-#  TEMPLATE_AUTHENTICATION=${SUBMAN_USER}:\"${SUBMAN_PASS}\"
+#  TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: \"${SUBMAN_PASS}\""
 #
 #          --- or ---
 #
@@ -45,7 +45,7 @@ fi
 #
 ###########################################
 
-TEMPLATE_AUTHENTICATION=${SUBMAN_USER}:\"${SUBMAN_PASS}\"
+TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: \"${SUBMAN_PASS}\""
 
 ###########################################
 
@@ -121,7 +121,7 @@ EOF
 cat <<EOF > /home/stack/deploy.sh
 #!/bin/bash
 
-read -s -p "subscription-manager password: " SUBMAN_PASS
+read -s -p "subscription-manager password: " SUBMAN_PASS && echo ""
 
 sudo podman login registry.redhat.io --username ${SUBMAN_USER} --password \${SUBMAN_PASS}
 
