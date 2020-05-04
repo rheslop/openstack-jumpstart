@@ -3,32 +3,13 @@
 TEMPLATES_HOME=/usr/share/openstack-tripleo-heat-templates
 CUSTOM_TEMPLATES=/home/stack/templates
 HOST_DOMAIN=$(hostname | cut -d . -f 2,3)
+IP_ADDRESS=$(ip addr show eth1 | awk 'FNR == 3 {print $2}' | cut -d/ -f1)
 
-if [ -f ./osjs.conf ]; then
-	source ./osjs.conf
-fi
+DNS_1=8.8.8.8
+DNS_2=1.1.1.1
 
-if [ -z ${SUBMAN_USER} ]; then
-	read -p "subscription-manager username: " SUBMAN_USER
-fi
-
+read -p "subscription-manager username: " SUBMAN_USER
 read -s -p "subscription-manager password: " SUBMAN_PASS && echo ""
-
-if [ -z ${SUBMAN_POOL} ]; then
-	read -p "subscription-manager pool: " SUBMAN_POOL
-fi
-
-if [ -z ${IP_ADDRESS} ]; then
-	read -p "IP Address: " IP_ADDRESS
-fi
-
-if [ -z ${DNS_1} ]; then
-	DNS_1=8.8.8.8
-fi
-
-if [ -z ${DNS_2} ]; then
-	DNS_2=1.1.1.1
-fi
 
 ###########################################
 ### Template authentication is required ###
@@ -51,8 +32,6 @@ TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: \"${SUBMAN_PASS}\""
 
 function CONFIGURE_HOST {
 
-subscription-manager register --username ${SUBMAN_USER} --password ${SUBMAN_PASS}
-subscription-manager attach --pool=${SUBMAN_POOL}
 subscription-manager release --set=8.1
 subscription-manager repos --disable=*
 subscription-manager repos \
