@@ -17,7 +17,7 @@ read -s -p "subscription-manager password: " SUBMAN_PASS && echo ""
 #
 #  Set TEMPLATE_AUTHENTICATION to either
 #
-#  TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: \"${SUBMAN_PASS}\""
+#  TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: '${SUBMAN_PASS}'"
 #
 #          --- or ---
 #
@@ -26,7 +26,7 @@ read -s -p "subscription-manager password: " SUBMAN_PASS && echo ""
 #
 ###########################################
 
-TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: \"${SUBMAN_PASS}\""
+TEMPLATE_AUTHENTICATION="${SUBMAN_USER}: '${SUBMAN_PASS}'"
 
 ###########################################
 
@@ -101,9 +101,8 @@ EOF
 cat <<EOF > /home/stack/deploy.sh
 #!/bin/bash
 
-read -s -p "subscription-manager password: " SUBMAN_PASS && echo ""
-
-sudo podman login registry.redhat.io --username ${SUBMAN_USER} --password \${SUBMAN_PASS}
+echo -e "Log into podman:\n"
+sudo podman login registry.redhat.io
 
 sudo openstack tripleo deploy --templates \
 --local-ip=${IP_ADDRESS}/24 \
@@ -117,11 +116,5 @@ chown -R stack:stack /home/stack
 chmod +x /home/stack/deploy.sh
 } 
 
-
-function DEPLOY {
-su --command 'tmux new-session -d -s "deploy" /home/stack/deploy.sh' stack
-}
-
 CONFIGURE_HOST
 PREINSTALL_CHECKLIST
-# DEPLOY
